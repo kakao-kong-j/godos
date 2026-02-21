@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+import React from "react";
+import { render } from "ink";
+import meow from "meow";
+import { App } from "./app.js";
+import { InitWizard } from "./init/InitWizard.js";
+import { runNonInteractive } from "./nonInteractive.js";
+
+const cli = meow(
+  `
+  Usage
+    $ kodo                  Interactive TUI
+    $ kodo init             Initialize a kodo workspace
+    $ kodo add <title>      Quick add a todo
+    $ kodo list             List todos (non-interactive)
+
+  Options
+    --priority, -P  Priority: high, medium, low (default: medium)
+    --project, -p   Project name
+    --tag, -t       Tag (can be repeated)
+
+  Examples
+    $ kodo
+    $ kodo add "Fix login bug" -P high -p myapp -t bug
+    $ kodo list
+`,
+  {
+    importMeta: import.meta,
+    flags: {
+      priority: { type: "string", shortFlag: "P", default: "medium" },
+      project: { type: "string", shortFlag: "p" },
+      tag: { type: "string", shortFlag: "t", isMultiple: true },
+    },
+  }
+);
+
+const [command, ...args] = cli.input;
+
+if (command === "init") {
+  const { waitUntilExit } = render(<InitWizard rootDir={process.cwd()} />);
+  waitUntilExit().catch(() => process.exit(1));
+} else if (command) {
+  runNonInteractive(command, args, cli.flags).then((code) => {
+    process.exit(code);
+  });
+} else {
+  const { waitUntilExit } = render(<App />);
+  waitUntilExit().catch(() => process.exit(1));
+}
