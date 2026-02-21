@@ -9,14 +9,14 @@ let tempDir: string;
 let dataFilePath: string;
 
 beforeEach(async () => {
-  tempDir = await mkdtemp(join(tmpdir(), "kodo-git-test-"));
-  dataFilePath = join(tempDir, ".kodo", "todos.json");
+  tempDir = await mkdtemp(join(tmpdir(), "godos-git-test-"));
+  dataFilePath = join(tempDir, ".godos", "todos.json");
 
   // Initialize a git repo with an initial commit
   execSync("git init", { cwd: tempDir });
   execSync('git config user.email "test@test.com"', { cwd: tempDir });
   execSync('git config user.name "Test"', { cwd: tempDir });
-  execSync("mkdir -p .kodo", { cwd: tempDir });
+  execSync("mkdir -p .godos", { cwd: tempDir });
   await writeFile(dataFilePath, '{"version":1,"todos":[]}');
   execSync("git add -A && git commit -m 'init'", { cwd: tempDir });
 });
@@ -32,14 +32,14 @@ describe("GitService", () => {
   });
 
   it("isGitRepo returns false outside a git repository", async () => {
-    const nonGitDir = await mkdtemp(join(tmpdir(), "kodo-nogit-"));
+    const nonGitDir = await mkdtemp(join(tmpdir(), "godos-nogit-"));
     const svc = new GitService(nonGitDir, join(nonGitDir, "x"), 0);
     const result = await svc.isGitRepo();
     await rm(nonGitDir, { recursive: true, force: true });
     expect(result).toBe(false);
   });
 
-  it("commitNow creates a commit with kodo: prefix", async () => {
+  it("commitNow creates a commit with godos: prefix", async () => {
     const svc = new GitService(tempDir, dataFilePath, 0);
 
     // Modify the data file
@@ -50,6 +50,6 @@ describe("GitService", () => {
     const log = execSync("git log --oneline -1", { cwd: tempDir })
       .toString()
       .trim();
-    expect(log).toContain('kodo: add "Test item"');
+    expect(log).toContain('godos: add "Test item"');
   });
 });

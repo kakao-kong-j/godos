@@ -22,7 +22,7 @@ export async function runNonInteractive(
     case "add": {
       const title = args.join(" ").trim();
       if (!title) {
-        console.error("Error: title is required. Usage: kodo add <title>");
+        console.error("Error: title is required. Usage: godos add <title>");
         return 1;
       }
 
@@ -55,7 +55,7 @@ export async function runNonInteractive(
     case "list": {
       const data = await store.load();
       if (data.todos.length === 0) {
-        console.log("No todos yet. Use 'kodo add <title>' or run 'kodo' for interactive mode.");
+        console.log("No todos yet. Use 'godos add <title>' or run 'godos' for interactive mode.");
         return 0;
       }
 
@@ -71,7 +71,7 @@ export async function runNonInteractive(
     }
 
     default:
-      console.error(`Unknown command: ${command}. Run 'kodo --help' for usage.`);
+      console.error(`Unknown command: ${command}. Run 'godos --help' for usage.`);
       return 1;
   }
 }

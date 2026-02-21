@@ -3,19 +3,19 @@ import { existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { z } from "zod";
 
-export const KodoConfigSchema = z.object({
+export const GodosConfigSchema = z.object({
   version: z.literal(1),
   dataPath: z.string().min(1),
 });
-export type KodoConfig = z.infer<typeof KodoConfigSchema>;
+export type GodosConfig = z.infer<typeof GodosConfigSchema>;
 
-export const DEFAULT_DATA_PATH = ".kodo/todos/default/todos.json";
+export const DEFAULT_DATA_PATH = ".godos/todos/default/todos.json";
 
-export const KODO_DIR = ".kodo";
+export const GODOS_DIR = ".godos";
 const CONFIG_FILENAME = "config.json";
 
 function configFilePath(rootDir: string): string {
-  return join(rootDir, KODO_DIR, CONFIG_FILENAME);
+  return join(rootDir, GODOS_DIR, CONFIG_FILENAME);
 }
 
 export function isInitialized(rootDir: string = process.cwd()): boolean {
@@ -24,19 +24,19 @@ export function isInitialized(rootDir: string = process.cwd()): boolean {
 
 export async function loadConfig(
   rootDir: string = process.cwd()
-): Promise<KodoConfig | null> {
+): Promise<GodosConfig | null> {
   const filePath = configFilePath(rootDir);
   if (!existsSync(filePath)) return null;
   try {
     const raw = await readFile(filePath, "utf-8");
-    return KodoConfigSchema.parse(JSON.parse(raw));
+    return GodosConfigSchema.parse(JSON.parse(raw));
   } catch {
     return null;
   }
 }
 
 export async function saveConfig(
-  config: KodoConfig,
+  config: GodosConfig,
   rootDir: string = process.cwd()
 ): Promise<void> {
   const filePath = configFilePath(rootDir);
@@ -48,7 +48,7 @@ export async function saveConfig(
 }
 
 export function resolveDataPath(
-  config: KodoConfig,
+  config: GodosConfig,
   rootDir: string = process.cwd()
 ): string {
   return resolve(rootDir, config.dataPath);

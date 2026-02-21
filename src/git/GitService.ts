@@ -37,7 +37,7 @@ export class GitService {
           this.commitTimer = null;
 
           await this.git.add(this.dataFilePath);
-          await this.git.commit(`kodo: ${msg}`, [this.dataFilePath]);
+          await this.git.commit(`godos: ${msg}`, [this.dataFilePath]);
         } catch {
           // Git failures are non-blocking; silently ignore
         }
@@ -55,7 +55,7 @@ export class GitService {
 
     try {
       await this.git.add(this.dataFilePath);
-      await this.git.commit(`kodo: ${message}`, [this.dataFilePath]);
+      await this.git.commit(`godos: ${message}`, [this.dataFilePath]);
     } catch {
       // Git failures are non-blocking
     }
