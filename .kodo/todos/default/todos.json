@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "todos": [
+    {
+      "id": "b87a22b8-2a11-459e-bbb2-994086c8d5f6",
+      "title": "포커 책 읽기",
+      "description": "",
+      "status": "pending",
+      "priority": "high",
+      "tags": [
+        "holdem"
+      ],
+      "project": "personal",
+      "createdAt": "2026-02-21T16:58:57.365Z",
+      "updatedAt": "2026-02-21T16:58:57.365Z"
+    }
+  ]
+}
