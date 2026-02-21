@@ -8,7 +8,7 @@ import { TodoStore } from "../TodoStore.js";
 let tempDir: string;
 
 beforeEach(async () => {
-  tempDir = await mkdtemp(join(tmpdir(), "kodo-test-"));
+  tempDir = await mkdtemp(join(tmpdir(), "godos-test-"));
 });
 
 afterEach(async () => {

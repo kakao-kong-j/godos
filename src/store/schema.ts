@@ -21,13 +21,13 @@ export const TodoSchema = z.object({
 });
 export type Todo = z.infer<typeof TodoSchema>;
 
-export const KodoDataSchema = z.object({
+export const GodosDataSchema = z.object({
   version: z.literal(1),
   todos: z.array(TodoSchema),
 });
-export type KodoData = z.infer<typeof KodoDataSchema>;
+export type GodosData = z.infer<typeof GodosDataSchema>;
 
-export const DEFAULT_KODO_DATA: KodoData = {
+export const DEFAULT_GODOS_DATA: GodosData = {
   version: 1,
   todos: [],
 };

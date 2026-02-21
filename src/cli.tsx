@@ -9,10 +9,10 @@ import { runNonInteractive } from "./nonInteractive.js";
 const cli = meow(
   `
   Usage
-    $ kodo                  Interactive TUI
-    $ kodo init             Initialize a kodo workspace
-    $ kodo add <title>      Quick add a todo
-    $ kodo list             List todos (non-interactive)
+    $ godos                  Interactive TUI
+    $ godos init             Initialize a godos workspace
+    $ godos add <title>      Quick add a todo
+    $ godos list             List todos (non-interactive)
 
   Options
     --priority, -P  Priority: high, medium, low (default: medium)
@@ -20,9 +20,9 @@ const cli = meow(
     --tag, -t       Tag (can be repeated)
 
   Examples
-    $ kodo
-    $ kodo add "Fix login bug" -P high -p myapp -t bug
-    $ kodo list
+    $ godos
+    $ godos add "Fix login bug" -P high -p myapp -t bug
+    $ godos list
 `,
   {
     importMeta: import.meta,

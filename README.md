@@ -1,4 +1,4 @@
-# Kodo
+# Godos
 
 Git 기반 인터랙티브 TUI TodoList CLI.
 
@@ -22,7 +22,7 @@ npm link
 ### 인터랙티브 TUI
 
 ```bash
-kodo
+godos
 # 또는
 node dist/cli.js
 ```
@@ -32,9 +32,9 @@ TUI가 실행되면 키보드로 Todo를 관리할 수 있습니다.
 ### 빠른 추가
 
 ```bash
-kodo add "할 일 제목"
-kodo add "버그 수정" -P high -p myapp -t bug
-kodo add "문서 작성" -P low -p docs -t doc -t readme
+godos add "할 일 제목"
+godos add "버그 수정" -P high -p myapp -t bug
+godos add "문서 작성" -P low -p docs -t doc -t readme
 ```
 
 | 옵션 | 축약 | 설명 | 기본값 |
@@ -46,7 +46,7 @@ kodo add "문서 작성" -P low -p docs -t doc -t readme
 ### 목록 출력
 
 ```bash
-kodo list
+godos list
 ```
 
 ```
@@ -90,25 +90,25 @@ TUI 메인 화면에서 사용할 수 있는 키:
 
 ## Git 연동
 
-모든 변경사항은 `.kodo/todos.json` 파일에 저장되고, 자동으로 git commit됩니다.
+모든 변경사항은 `.godos/todos.json` 파일에 저장되고, 자동으로 git commit됩니다.
 
-- 커밋 메시지에 `kodo:` 접두사가 붙습니다
+- 커밋 메시지에 `godos:` 접두사가 붙습니다
 - 빠른 연속 변경은 500ms 디바운스로 배치 커밋됩니다
 - git 저장소가 아닌 경우에도 Todo 관리는 정상 동작합니다
 
 ```bash
-# kodo 커밋만 보기
-git log --grep="kodo:"
+# godos 커밋만 보기
+git log --grep="godos:"
 
 # 예시 출력
-# a1b2c3d kodo: add "버그 수정"
-# d4e5f6g kodo: complete "버그 수정"
-# h7i8j9k kodo: delete "임시 메모"
+# a1b2c3d godos: add "버그 수정"
+# d4e5f6g godos: complete "버그 수정"
+# h7i8j9k godos: delete "임시 메모"
 ```
 
 ## 데이터 구조
 
-Todo 데이터는 `.kodo/todos.json`에 JSON으로 저장됩니다:
+Todo 데이터는 `.godos/todos.json`에 JSON으로 저장됩니다:
 
 ```json
 {

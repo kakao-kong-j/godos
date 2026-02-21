@@ -111,7 +111,7 @@ export function MainListScreen() {
 
   return (
     <Box flexDirection="column">
-      <Header title="Kodo" subtitle={subtitle} />
+      <Header title="Godos" subtitle={subtitle} />
       <TodoList todos={filteredTodos} selectedIndex={state.selectedIndex} />
       {confirmDelete && selected && (
         <Box marginTop={1}>

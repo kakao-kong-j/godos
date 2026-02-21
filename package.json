@@ -1,12 +1,12 @@
 {
-  "name": "kodo",
+  "name": "godos",
   "version": "1.0.0",
   "description": "Git-based interactive TUI TodoList CLI",
   "license": "ISC",
   "author": "",
   "type": "module",
   "bin": {
-    "kodo": "./dist/cli.js"
+    "godos": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",

@@ -10,7 +10,7 @@ import {
   saveConfig,
   resolveDataPath,
   DEFAULT_DATA_PATH,
-  type KodoConfig,
+  type GodosConfig,
 } from "../store/config.js";
 import { GitService } from "../git/GitService.js";
 
@@ -54,7 +54,7 @@ export function InitWizard({ rootDir }: Props) {
   async function performInit(resolvedDataPath: string): Promise<void> {
     setStep("running");
     try {
-      const config: KodoConfig = { version: 1, dataPath: resolvedDataPath };
+      const config: GodosConfig = { version: 1, dataPath: resolvedDataPath };
       await saveConfig(config, rootDir);
       const absDataPath = resolveDataPath(config, rootDir);
       await mkdir(dirname(absDataPath), { recursive: true });
@@ -79,7 +79,7 @@ export function InitWizard({ rootDir }: Props) {
 
   return (
     <Box flexDirection="column">
-      <Header title="kodo init" subtitle="Initialize a kodo workspace" />
+      <Header title="godos init" subtitle="Initialize a godos workspace" />
 
       {gitAvailable === false && (
         <Box marginBottom={1}>
@@ -118,7 +118,7 @@ export function InitWizard({ rootDir }: Props) {
       {step === "confirm_overwrite" && (
         <Box flexDirection="column" marginTop={1}>
           <Text color="yellow" bold>
-            kodo is already initialized in this directory.
+            godos is already initialized in this directory.
           </Text>
           <Text color="gray">
             Existing config will be overwritten. Continue? (y/n)
@@ -135,10 +135,10 @@ export function InitWizard({ rootDir }: Props) {
       {step === "done" && (
         <Box flexDirection="column" marginTop={1}>
           <Text color="green" bold>
-            Initialized kodo workspace.
+            Initialized godos workspace.
           </Text>
           <Text color="gray">Data path: {dataPath}</Text>
-          <Text color="gray">Config written to .kodo/config.json</Text>
+          <Text color="gray">Config written to .godos/config.json</Text>
           <Text color="gray" dimColor>
             Press Enter to exit.
           </Text>

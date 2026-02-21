@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Kodo is a Git-based interactive TUI TodoList CLI built with Ink (React for terminals). Todo data is stored in `.kodo/todos/default/todos.json` and changes are auto-committed with `kodo:` prefix.
+Godos is a Git-based interactive TUI TodoList CLI built with Ink (React for terminals). Todo data is stored in `.godos/todos/default/todos.json` and changes are auto-committed with `godos:` prefix.
 
 ## Tech Stack
 
@@ -43,14 +43,14 @@ node dist/cli.js list                         # List todos (stdout)
 - `src/screens/` - MainList, AddTodo, EditTodo, Filter, Help screens
 - `src/components/` - TodoItem, TodoList, PriorityBadge, TagList, StatusBar, Header, FormField
 - `src/hooks/` - useNavigation, useTodos (useReducer), useGit
-- `src/store/` - Zod schema, TodoStore (file I/O), KodoConfig (config management)
+- `src/store/` - Zod schema, TodoStore (file I/O), GodosConfig (config management)
 - `src/git/` - GitService (simple-git wrapper with debounced auto-commit)
 - `src/init/` - InitWizard (interactive workspace initialization)
 - `src/utils/` - colors, dates, id generation helpers
-- `src/nonInteractive.ts` - `kodo add` and `kodo list` commands
+- `src/nonInteractive.ts` - `godos add` and `godos list` commands
 
 ## Data
 
-- Config: `.kodo/config.json` (version, dataPath)
-- Todo data: `.kodo/todos/default/todos.json` (git tracked)
-- Git commits use `kodo:` prefix, filterable with `git log --grep="kodo:"`
+- Config: `.godos/config.json` (version, dataPath)
+- Todo data: `.godos/todos/default/todos.json` (git tracked)
+- Git commits use `godos:` prefix, filterable with `git log --grep="godos:"`

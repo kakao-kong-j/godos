@@ -41,8 +41,8 @@ export function HelpScreen() {
       ))}
       <Box marginTop={1}>
         <Text color="gray">
-          Git: All changes are automatically committed with &quot;kodo:&quot; prefix.
-          {"\n"}Use: git log --grep=&quot;kodo:&quot; to view kodo history.
+          Git: All changes are automatically committed with &quot;godos:&quot; prefix.
+          {"\n"}Use: git log --grep=&quot;godos:&quot; to view godos history.
         </Text>
       </Box>
     </Box>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TodoSchema, KodoDataSchema } from "../schema.js";
+import { TodoSchema, GodosDataSchema } from "../schema.js";
 
 const validTodo = {
   id: "550e8400-e29b-41d4-a716-446655440000",
@@ -57,17 +57,17 @@ describe("TodoSchema", () => {
   });
 });
 
-describe("KodoDataSchema", () => {
+describe("GodosDataSchema", () => {
   it("accepts valid data with version 1", () => {
     const data = { version: 1, todos: [validTodo] };
-    const result = KodoDataSchema.parse(data);
+    const result = GodosDataSchema.parse(data);
     expect(result.version).toBe(1);
     expect(result.todos).toHaveLength(1);
   });
 
   it("rejects wrong version number", () => {
     expect(() =>
-      KodoDataSchema.parse({ version: 2, todos: [] })
+      GodosDataSchema.parse({ version: 2, todos: [] })
     ).toThrow();
   });
 });
