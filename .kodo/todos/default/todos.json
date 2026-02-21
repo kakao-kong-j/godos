@@ -2,6 +2,19 @@
   "version": 1,
   "todos": [
     {
+      "id": "b3793ad6-22cc-443f-b5bf-94cf3a3fcd57",
+      "title": "메가카드",
+      "description": "",
+      "status": "pending",
+      "priority": "high",
+      "tags": [
+        "work"
+      ],
+      "project": "work",
+      "createdAt": "2026-02-21T16:59:42.964Z",
+      "updatedAt": "2026-02-21T16:59:42.964Z"
+    },
+    {
       "id": "b87a22b8-2a11-459e-bbb2-994086c8d5f6",
       "title": "포커 책 읽기",
       "description": "",
