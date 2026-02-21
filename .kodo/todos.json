@@ -13,6 +13,18 @@
       "project": "myapp",
       "createdAt": "2026-02-21T13:40:01.089Z",
       "updatedAt": "2026-02-21T13:40:01.089Z"
+    },
+    {
+      "id": "4490c03e-24c3-4da8-9c3c-67270673eae0",
+      "title": "Write tests",
+      "description": "",
+      "status": "pending",
+      "priority": "medium",
+      "tags": [
+        "testing"
+      ],
+      "createdAt": "2026-02-21T13:40:06.334Z",
+      "updatedAt": "2026-02-21T13:40:06.334Z"
     }
   ]
 }
