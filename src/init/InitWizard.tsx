@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Box, Text, useInput, useApp } from "ink";
 import { TextInput } from "@inkjs/ui";
 import { mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
+import { simpleGit } from "simple-git";
 import { Header } from "../components/Header.js";
 import { StatusBar } from "../components/StatusBar.js";
 import {
@@ -13,7 +14,6 @@ import {
   DEFAULT_DATA_PATH,
   type GodosConfig,
 } from "../store/config.js";
-import { GitService } from "../git/GitService.js";
 
 type Step = "input" | "confirm_overwrite" | "running" | "done" | "error";
 
@@ -22,15 +22,9 @@ export function InitWizard() {
 
   const [step, setStep] = useState<Step>("input");
   const [dataPath, setDataPath] = useState(DEFAULT_DATA_PATH);
-  const [gitAvailable, setGitAvailable] = useState<boolean | null>(null);
   const [alreadyInit] = useState(() => isInitialized());
   const [errorMsg, setErrorMsg] = useState("");
   const isRunningRef = useRef(false);
-
-  useEffect(() => {
-    const git = new GitService(process.cwd(), "", [], 0);
-    git.isGitRepo().then(setGitAvailable).catch(() => setGitAvailable(false));
-  }, []);
 
   useInput((input, key) => {
     if (step === "confirm_overwrite" && !isRunningRef.current) {
@@ -55,6 +49,7 @@ export function InitWizard() {
       await saveConfig(config);
       const absDataPath = resolveDataPath(config);
       await mkdir(dirname(absDataPath), { recursive: true });
+      await simpleGit(godosRoot()).init();
       setStep("done");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err));
@@ -77,14 +72,6 @@ export function InitWizard() {
   return (
     <Box flexDirection="column">
       <Header title="godos init" subtitle="Initialize a godos workspace" />
-
-      {gitAvailable === false && (
-        <Box marginBottom={1}>
-          <Text color="yellow">
-            Warning: git is not available. Auto-commit will be disabled.
-          </Text>
-        </Box>
-      )}
 
       {step === "input" && (
         <Box flexDirection="column">

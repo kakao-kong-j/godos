@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Text } from "ink";
 import { TodoStore } from "./store/TodoStore.js";
 import { GitService } from "./git/GitService.js";
+import { godosRoot } from "./store/config.js";
 import { ArchiveStore, ArchiveContext } from "./store/ArchiveStore.js";
 import { NavigationContext, useNavigationState } from "./hooks/useNavigation.js";
 import { TodoContext, useTodos } from "./hooks/useTodos.js";
@@ -25,7 +26,7 @@ export function App() {
         setStore(s);
         const archivePath = TodoStore.archiveFilePathFor(s.dataFilePath);
         setArchiveStore(new ArchiveStore(archivePath));
-        const gs = new GitService(process.cwd(), s.dataFilePath, [archivePath]);
+        const gs = new GitService(godosRoot(), s.dataFilePath, [archivePath]);
         gs.isGitRepo().then((isRepo) => {
           if (isRepo) setGitService(gs);
         });

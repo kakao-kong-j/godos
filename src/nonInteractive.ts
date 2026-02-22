@@ -1,5 +1,6 @@
 import { TodoStore } from "./store/TodoStore.js";
 import { GitService } from "./git/GitService.js";
+import { godosRoot } from "./store/config.js";
 import { generateId } from "./utils/id.js";
 import { nowISO, formatDate } from "./utils/dates.js";
 import { PRIORITY_LABELS, STATUS_ICONS } from "./utils/colors.js";
@@ -45,7 +46,7 @@ export async function runNonInteractive(
       await store.save(data);
 
       // Git commit
-      const gitService = new GitService(process.cwd(), store.dataFilePath, [], 0);
+      const gitService = new GitService(godosRoot(), store.dataFilePath, [], 0);
       await gitService.commitNow(`add "${title}"`);
 
       console.log(`Added: ${title} [${PRIORITY_LABELS[priority]}]`);
