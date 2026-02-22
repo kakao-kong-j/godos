@@ -26,6 +26,16 @@
       "project": "personal",
       "createdAt": "2026-02-21T16:58:57.365Z",
       "updatedAt": "2026-02-21T16:58:57.365Z"
+    },
+    {
+      "id": "c420c543-f0a0-484a-9b38-ba22ed6d998e",
+      "title": "테스트",
+      "description": "",
+      "status": "pending",
+      "priority": "medium",
+      "tags": [],
+      "createdAt": "2026-02-22T16:01:19.372Z",
+      "updatedAt": "2026-02-22T16:01:19.372Z"
     }
   ]
 }
