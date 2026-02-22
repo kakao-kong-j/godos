@@ -1,5 +1,5 @@
 import { TodoStore } from "./store/TodoStore.js";
-import { GitService } from "./git/GitService.js";
+import { GitService, gitErrorHint } from "./git/GitService.js";
 import { godosRoot } from "./store/config.js";
 import { generateId } from "./utils/id.js";
 import { nowISO, formatDate } from "./utils/dates.js";
@@ -69,6 +69,84 @@ export async function runNonInteractive(
         console.log(`${icon} ${todo.title} (${pLabel})${project}${tags}  ${date}`);
       }
       return 0;
+    }
+
+    case "remote": {
+      const gitService = new GitService(godosRoot(), store.dataFilePath, [], 0);
+      const [subCmd, ...subArgs] = args;
+
+      if (!subCmd || subCmd === "list") {
+        const remotes = await gitService.getRemotes();
+        if (remotes.length === 0) {
+          console.log("No remotes configured. Use 'godos remote add <name> <url>' to add one.");
+        } else {
+          for (const r of remotes) {
+            console.log(`${r.name}\t${r.url}`);
+          }
+        }
+        return 0;
+      }
+
+      if (subCmd === "add") {
+        const [name, url] = subArgs;
+        if (!name || !url) {
+          console.error("Usage: godos remote add <name> <url>");
+          return 1;
+        }
+        try {
+          await gitService.addRemote(name, url);
+          console.log(`Remote '${name}' added: ${url}`);
+          return 0;
+        } catch (err) {
+          console.error(`Error: ${gitErrorHint(err)}`);
+          return 1;
+        }
+      }
+
+      if (subCmd === "remove") {
+        const [name] = subArgs;
+        if (!name) {
+          console.error("Usage: godos remote remove <name>");
+          return 1;
+        }
+        try {
+          await gitService.removeRemote(name);
+          console.log(`Remote '${name}' removed.`);
+          return 0;
+        } catch (err) {
+          console.error(`Error: ${gitErrorHint(err)}`);
+          return 1;
+        }
+      }
+
+      console.error(`Unknown remote command: ${subCmd}. Use 'add', 'remove', or 'list'.`);
+      return 1;
+    }
+
+    case "push": {
+      const remote = args[0] || "origin";
+      const gitService = new GitService(godosRoot(), store.dataFilePath, [], 0);
+      try {
+        const message = await gitService.push(remote);
+        console.log(message);
+        return 0;
+      } catch (err) {
+        console.error(`Push failed: ${gitErrorHint(err)}`);
+        return 1;
+      }
+    }
+
+    case "pull": {
+      const remote = args[0] || "origin";
+      const gitService = new GitService(godosRoot(), store.dataFilePath, [], 0);
+      try {
+        const message = await gitService.pull(remote);
+        console.log(message);
+        return 0;
+      } catch (err) {
+        console.error(`Pull failed: ${gitErrorHint(err)}`);
+        return 1;
+      }
     }
 
     default:

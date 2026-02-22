@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useCallback, createContext, useContext } from "react";
+import { useReducer, useEffect, useCallback, useRef, createContext, useContext } from "react";
 import type { Todo, Priority, TodoStatus } from "../store/schema.js";
 import { TodoStore } from "../store/TodoStore.js";
 import { generateId } from "../utils/id.js";
@@ -193,6 +193,7 @@ export interface TodoContextType {
   resetFilter: () => void;
   setSelectedIndex: (index: number) => void;
   archiveDone: () => Todo[];
+  reload: () => Promise<void>;
 }
 
 export const TodoContext = createContext<TodoContextType>(null!);
@@ -283,9 +284,20 @@ export function useTodos(store: TodoStore | null) {
     return doneTodos;
   }, [state.todos]);
 
-  // Persist on todo changes
+  const reloadingRef = useRef(false);
+
+  const reload = useCallback(async () => {
+    if (store) {
+      reloadingRef.current = true;
+      const todos = await store.getTodos();
+      dispatch({ type: "LOAD", todos });
+      reloadingRef.current = false;
+    }
+  }, [store]);
+
+  // Persist on todo changes (skip during reload to avoid overwriting pulled data)
   useEffect(() => {
-    if (state.loaded) {
+    if (state.loaded && !reloadingRef.current) {
       persist(state.todos);
     }
   }, [state.todos, state.loaded, persist]);
@@ -304,5 +316,6 @@ export function useTodos(store: TodoStore | null) {
     resetFilter,
     setSelectedIndex,
     archiveDone,
+    reload,
   };
 }

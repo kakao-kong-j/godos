@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Box, Text, useInput, useApp } from "ink";
 import { useTodoContext } from "../hooks/useTodos.js";
 import { useNavigation } from "../hooks/useNavigation.js";
@@ -10,19 +10,37 @@ import { StatusBar } from "../components/StatusBar.js";
 
 const STATUS_FILTER_CYCLE = ["all", "pending", "in_progress", "done"] as const;
 
+interface SyncStatus {
+  type: "pushing" | "pulling" | "success" | "error";
+  message: string;
+}
+
 export function MainListScreen() {
   const { exit } = useApp();
   const nav = useNavigation();
-  const { state, filteredTodos, toggleStatus, cyclePriority, deleteTodo, archiveDone, setFilter, resetFilter, setSelectedIndex } =
+  const { state, filteredTodos, toggleStatus, cyclePriority, deleteTodo, archiveDone, setFilter, resetFilter, setSelectedIndex, reload } =
     useTodoContext();
   const git = useGitContext();
   const archiveStore = useArchiveStore();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmArchive, setConfirmArchive] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+  const syncingRef = useRef(false);
 
   const selected = filteredTodos[state.selectedIndex];
 
   useInput((input, key) => {
+    // Dismiss sync status on any key
+    if (syncStatus?.type === "error" || syncStatus?.type === "success") {
+      setSyncStatus(null);
+      return;
+    }
+
+    // Block input while syncing
+    if (syncStatus?.type === "pushing" || syncStatus?.type === "pulling") {
+      return;
+    }
+
     if (confirmDelete) {
       if (input === "y" && selected) {
         const title = selected.title;
@@ -110,6 +128,38 @@ export function MainListScreen() {
       nav.navigate("stats");
     }
 
+    // Push
+    if (input === "P" && !syncingRef.current) {
+      syncingRef.current = true;
+      setSyncStatus({ type: "pushing", message: "Pushing..." });
+      git.push().then((result) => {
+        setSyncStatus({ type: result.ok ? "success" : "error", message: result.message });
+      }).catch((err) => {
+        setSyncStatus({ type: "error", message: String(err) });
+      }).finally(() => {
+        syncingRef.current = false;
+      });
+    }
+
+    // Pull
+    if (input === "L" && !syncingRef.current) {
+      syncingRef.current = true;
+      setSyncStatus({ type: "pulling", message: "Pulling..." });
+      git.pull().then((result) => {
+        if (result.ok) {
+          return reload().then(() => {
+            setSyncStatus({ type: "success", message: result.message });
+          });
+        } else {
+          setSyncStatus({ type: "error", message: result.message });
+        }
+      }).catch((err) => {
+        setSyncStatus({ type: "error", message: String(err) });
+      }).finally(() => {
+        syncingRef.current = false;
+      });
+    }
+
     // Tab: cycle status filter
     if (key.tab) {
       const currentIdx = STATUS_FILTER_CYCLE.indexOf(state.filter.status as typeof STATUS_FILTER_CYCLE[number]);
@@ -159,6 +209,25 @@ export function MainListScreen() {
           </Text>
         </Box>
       )}
+      {syncStatus && (
+        <Box marginTop={1}>
+          <Text
+            color={
+              syncStatus.type === "error"
+                ? "red"
+                : syncStatus.type === "success"
+                  ? "green"
+                  : "yellow"
+            }
+            bold={syncStatus.type !== "success"}
+          >
+            {syncStatus.message}
+            {(syncStatus.type === "success" || syncStatus.type === "error") && (
+              <Text color="gray"> (press any key)</Text>
+            )}
+          </Text>
+        </Box>
+      )}
       <StatusBar
         hints={[
           { key: "↑↓/jk", label: "navigate" },
@@ -169,6 +238,8 @@ export function MainListScreen() {
           { key: "p", label: "priority" },
           { key: "A", label: "archive" },
           { key: "s", label: "stats" },
+          { key: "P", label: "push" },
+          { key: "L", label: "pull" },
           { key: "/", label: "filter" },
           { key: "?", label: "help" },
           { key: "q", label: "quit" },

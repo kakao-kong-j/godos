@@ -10,10 +10,15 @@ import { runNonInteractive } from "./nonInteractive.js";
 const cli = meow(
   `
   Usage
-    $ godos                  Interactive TUI
-    $ godos init             Initialize a godos workspace
-    $ godos add <title>      Quick add a todo
-    $ godos list             List todos (non-interactive)
+    $ godos                          Interactive TUI
+    $ godos init                     Initialize a godos workspace
+    $ godos add <title>              Quick add a todo
+    $ godos list                     List todos (non-interactive)
+    $ godos remote                   List git remotes
+    $ godos remote add <name> <url>  Add a git remote
+    $ godos remote remove <name>     Remove a git remote
+    $ godos push [remote]            Push to remote (default: origin)
+    $ godos pull [remote]            Pull from remote (default: origin)
 
   Options
     --priority, -P  Priority: high, medium, low (default: medium)
@@ -24,6 +29,9 @@ const cli = meow(
     $ godos
     $ godos add "Fix login bug" -P high -p myapp -t bug
     $ godos list
+    $ godos remote add origin git@github.com:user/godos-data.git
+    $ godos push
+    $ godos pull
 `,
   {
     importMeta: import.meta,
