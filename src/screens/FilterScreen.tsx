@@ -55,6 +55,12 @@ export function FilterScreen() {
       });
     }
 
+    // Move to next field with Enter
+    if (key.return && activeField === "status") {
+      setActiveField("priority");
+      return;
+    }
+
     // Apply with Ctrl+S or Enter on last field
     if ((input === "s" && key.ctrl) || (key.return && activeField === "priority")) {
       setFilter({

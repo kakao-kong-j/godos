@@ -27,20 +27,20 @@ afterEach(async () => {
 
 describe("GitService", () => {
   it("isGitRepo returns true inside a git repository", async () => {
-    const svc = new GitService(tempDir, dataFilePath, 0);
+    const svc = new GitService(tempDir, dataFilePath, [], 0);
     expect(await svc.isGitRepo()).toBe(true);
   });
 
   it("isGitRepo returns false outside a git repository", async () => {
     const nonGitDir = await mkdtemp(join(tmpdir(), "godos-nogit-"));
-    const svc = new GitService(nonGitDir, join(nonGitDir, "x"), 0);
+    const svc = new GitService(nonGitDir, join(nonGitDir, "x"), [], 0);
     const result = await svc.isGitRepo();
     await rm(nonGitDir, { recursive: true, force: true });
     expect(result).toBe(false);
   });
 
   it("commitNow creates a commit with godos: prefix", async () => {
-    const svc = new GitService(tempDir, dataFilePath, 0);
+    const svc = new GitService(tempDir, dataFilePath, [], 0);
 
     // Modify the data file
     await writeFile(dataFilePath, '{"version":1,"todos":[{"changed":true}]}');

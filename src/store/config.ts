@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
+import { homedir } from "node:os";
 import { z } from "zod";
 
 export const GodosConfigSchema = z.object({
@@ -9,23 +10,25 @@ export const GodosConfigSchema = z.object({
 });
 export type GodosConfig = z.infer<typeof GodosConfigSchema>;
 
-export const DEFAULT_DATA_PATH = ".godos/todos/default/todos.json";
+export const DEFAULT_DATA_PATH = "todos/default/todos.json";
 
 export const GODOS_DIR = ".godos";
 const CONFIG_FILENAME = "config.json";
 
-function configFilePath(rootDir: string): string {
-  return join(rootDir, GODOS_DIR, CONFIG_FILENAME);
+export function godosRoot(): string {
+  return join(homedir(), GODOS_DIR);
 }
 
-export function isInitialized(rootDir: string = process.cwd()): boolean {
-  return existsSync(configFilePath(rootDir));
+function configFilePath(): string {
+  return join(godosRoot(), CONFIG_FILENAME);
 }
 
-export async function loadConfig(
-  rootDir: string = process.cwd()
-): Promise<GodosConfig | null> {
-  const filePath = configFilePath(rootDir);
+export function isInitialized(): boolean {
+  return existsSync(configFilePath());
+}
+
+export async function loadConfig(): Promise<GodosConfig | null> {
+  const filePath = configFilePath();
   if (!existsSync(filePath)) return null;
   try {
     const raw = await readFile(filePath, "utf-8");
@@ -35,11 +38,8 @@ export async function loadConfig(
   }
 }
 
-export async function saveConfig(
-  config: GodosConfig,
-  rootDir: string = process.cwd()
-): Promise<void> {
-  const filePath = configFilePath(rootDir);
+export async function saveConfig(config: GodosConfig): Promise<void> {
+  const filePath = configFilePath();
   const dir = dirname(filePath);
   if (!existsSync(dir)) {
     await mkdir(dir, { recursive: true });
@@ -47,9 +47,6 @@ export async function saveConfig(
   await writeFile(filePath, JSON.stringify(config, null, 2) + "\n", "utf-8");
 }
 
-export function resolveDataPath(
-  config: GodosConfig,
-  rootDir: string = process.cwd()
-): string {
-  return resolve(rootDir, config.dataPath);
+export function resolveDataPath(config: GodosConfig): string {
+  return resolve(godosRoot(), config.dataPath);
 }

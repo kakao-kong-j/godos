@@ -2,28 +2,30 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { GodosDataSchema, DEFAULT_GODOS_DATA } from "./schema.js";
-import { GODOS_DIR, loadConfig, resolveDataPath } from "./config.js";
+import { godosRoot, loadConfig, resolveDataPath } from "./config.js";
 import type { GodosData, Todo } from "./schema.js";
-
-const LEGACY_DATA_FILE = "todos.json";
 
 export class TodoStore {
   private filePath: string;
 
-  constructor(rootDir: string = process.cwd(), dataFilePath?: string) {
-    this.filePath = dataFilePath ?? join(rootDir, GODOS_DIR, LEGACY_DATA_FILE);
+  constructor(dataFilePath: string) {
+    this.filePath = dataFilePath;
   }
 
-  static async create(rootDir: string = process.cwd()): Promise<TodoStore> {
-    const config = await loadConfig(rootDir);
+  static async create(): Promise<TodoStore> {
+    const config = await loadConfig();
     if (config) {
-      return new TodoStore(rootDir, resolveDataPath(config, rootDir));
+      return new TodoStore(resolveDataPath(config));
     }
-    return new TodoStore(rootDir);
+    return new TodoStore(join(godosRoot(), "todos/default/todos.json"));
   }
 
   get dataFilePath(): string {
     return this.filePath;
+  }
+
+  static archiveFilePathFor(todosFilePath: string): string {
+    return join(dirname(todosFilePath), "archive.json");
   }
 
   async load(): Promise<GodosData> {

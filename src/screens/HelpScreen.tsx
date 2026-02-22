@@ -10,6 +10,8 @@ const SHORTCUTS = [
   { key: "e", desc: "Edit selected todo" },
   { key: "d", desc: "Delete selected todo (with confirmation)" },
   { key: "p", desc: "Cycle priority (low → medium → high)" },
+  { key: "A (shift+a)", desc: "Archive all done todos (with confirmation)" },
+  { key: "s", desc: "Open stats screen" },
   { key: "Tab", desc: "Cycle status filter" },
   { key: "/", desc: "Open filter/search screen" },
   { key: "?", desc: "Show this help screen" },

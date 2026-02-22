@@ -1,16 +1,27 @@
+import { existsSync } from "node:fs";
 import { simpleGit, type SimpleGit } from "simple-git";
 
 export class GitService {
   private git: SimpleGit;
   private dataFilePath: string;
+  private extraFilePaths: string[];
   private commitTimer: ReturnType<typeof setTimeout> | null = null;
   private pendingMessage: string | null = null;
   private debounceMs: number;
 
-  constructor(rootDir: string, dataFilePath: string, debounceMs = 500) {
+  constructor(rootDir: string, dataFilePath: string, extraFilePaths: string[] = [], debounceMs = 500) {
     this.git = simpleGit(rootDir);
     this.dataFilePath = dataFilePath;
+    this.extraFilePaths = extraFilePaths;
     this.debounceMs = debounceMs;
+  }
+
+  private get stagableFilePaths(): string[] {
+    return this.allFilePaths.filter(existsSync);
+  }
+
+  private get allFilePaths(): string[] {
+    return [this.dataFilePath, ...this.extraFilePaths];
   }
 
   async isGitRepo(): Promise<boolean> {
@@ -36,8 +47,10 @@ export class GitService {
           this.pendingMessage = null;
           this.commitTimer = null;
 
-          await this.git.add(this.dataFilePath);
-          await this.git.commit(`godos: ${msg}`, [this.dataFilePath]);
+          const files = this.stagableFilePaths;
+          if (files.length === 0) return;
+          await this.git.add(files);
+          await this.git.commit(`godos: ${msg}`, files);
         } catch {
           // Git failures are non-blocking; silently ignore
         }
@@ -54,8 +67,10 @@ export class GitService {
     }
 
     try {
-      await this.git.add(this.dataFilePath);
-      await this.git.commit(`godos: ${message}`, [this.dataFilePath]);
+      const files = this.stagableFilePaths;
+      if (files.length === 0) return;
+      await this.git.add(files);
+      await this.git.commit(`godos: ${message}`, files);
     } catch {
       // Git failures are non-blocking
     }

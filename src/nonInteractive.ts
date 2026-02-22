@@ -45,7 +45,7 @@ export async function runNonInteractive(
       await store.save(data);
 
       // Git commit
-      const gitService = new GitService(process.cwd(), store.dataFilePath, 0);
+      const gitService = new GitService(process.cwd(), store.dataFilePath, [], 0);
       await gitService.commitNow(`add "${title}"`);
 
       console.log(`Added: ${title} [${PRIORITY_LABELS[priority]}]`);

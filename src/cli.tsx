@@ -4,6 +4,7 @@ import { render } from "ink";
 import meow from "meow";
 import { App } from "./app.js";
 import { InitWizard } from "./init/InitWizard.js";
+import { isInitialized } from "./store/config.js";
 import { runNonInteractive } from "./nonInteractive.js";
 
 const cli = meow(
@@ -37,8 +38,11 @@ const cli = meow(
 const [command, ...args] = cli.input;
 
 if (command === "init") {
-  const { waitUntilExit } = render(<InitWizard rootDir={process.cwd()} />);
+  const { waitUntilExit } = render(<InitWizard />);
   waitUntilExit().catch(() => process.exit(1));
+} else if (!isInitialized()) {
+  console.error("godos is not initialized. Run 'godos init' first.");
+  process.exit(1);
 } else if (command) {
   runNonInteractive(command, args, cli.flags).then((code) => {
     process.exit(code);

@@ -45,7 +45,8 @@ export type TodoAction =
   | { type: "CYCLE_PRIORITY"; id: string }
   | { type: "SET_FILTER"; filter: Partial<TodoFilter> }
   | { type: "RESET_FILTER" }
-  | { type: "SET_SELECTED"; index: number };
+  | { type: "SET_SELECTED"; index: number }
+  | { type: "ARCHIVE_DONE" };
 
 // --- Reducer ---
 
@@ -118,6 +119,16 @@ export function todoReducer(state: TodoState, action: TodoAction): TodoState {
     case "SET_SELECTED":
       return { ...state, selectedIndex: action.index };
 
+    case "ARCHIVE_DONE": {
+      const remaining = state.todos.filter((t) => t.status !== "done");
+      const maxIdx = Math.max(0, remaining.length - 1);
+      return {
+        ...state,
+        todos: remaining,
+        selectedIndex: Math.min(state.selectedIndex, maxIdx),
+      };
+    }
+
     default:
       return state;
   }
@@ -181,6 +192,7 @@ export interface TodoContextType {
   setFilter: (filter: Partial<TodoFilter>) => void;
   resetFilter: () => void;
   setSelectedIndex: (index: number) => void;
+  archiveDone: () => Todo[];
 }
 
 export const TodoContext = createContext<TodoContextType>(null!);
@@ -265,6 +277,12 @@ export function useTodos(store: TodoStore | null) {
     dispatch({ type: "SET_SELECTED", index });
   }, []);
 
+  const archiveDone = useCallback((): Todo[] => {
+    const doneTodos = state.todos.filter((t) => t.status === "done");
+    dispatch({ type: "ARCHIVE_DONE" });
+    return doneTodos;
+  }, [state.todos]);
+
   // Persist on todo changes
   useEffect(() => {
     if (state.loaded) {
@@ -285,5 +303,6 @@ export function useTodos(store: TodoStore | null) {
     setFilter,
     resetFilter,
     setSelectedIndex,
+    archiveDone,
   };
 }

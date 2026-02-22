@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Text } from "ink";
 import { TodoStore } from "./store/TodoStore.js";
 import { GitService } from "./git/GitService.js";
+import { ArchiveStore, ArchiveContext } from "./store/ArchiveStore.js";
 import { NavigationContext, useNavigationState } from "./hooks/useNavigation.js";
 import { TodoContext, useTodos } from "./hooks/useTodos.js";
 import { GitContext, useGitService } from "./hooks/useGit.js";
@@ -10,9 +11,11 @@ import { AddTodoScreen } from "./screens/AddTodoScreen.js";
 import { EditTodoScreen } from "./screens/EditTodoScreen.js";
 import { FilterScreen } from "./screens/FilterScreen.js";
 import { HelpScreen } from "./screens/HelpScreen.js";
+import { StatsScreen } from "./screens/StatsScreen.js";
 
 export function App() {
   const [store, setStore] = useState<TodoStore | null>(null);
+  const [archiveStore, setArchiveStore] = useState<ArchiveStore | null>(null);
   const [gitService, setGitService] = useState<GitService | null>(null);
   const [initError, setInitError] = useState<string | null>(null);
 
@@ -20,7 +23,9 @@ export function App() {
     TodoStore.create()
       .then((s) => {
         setStore(s);
-        const gs = new GitService(process.cwd(), s.dataFilePath);
+        const archivePath = TodoStore.archiveFilePathFor(s.dataFilePath);
+        setArchiveStore(new ArchiveStore(archivePath));
+        const gs = new GitService(process.cwd(), s.dataFilePath, [archivePath]);
         gs.isGitRepo().then((isRepo) => {
           if (isRepo) setGitService(gs);
         });
@@ -60,6 +65,8 @@ export function App() {
         return <FilterScreen />;
       case "help":
         return <HelpScreen />;
+      case "stats":
+        return <StatsScreen />;
       default:
         return <MainListScreen />;
     }
@@ -69,7 +76,9 @@ export function App() {
     <NavigationContext.Provider value={nav}>
       <TodoContext.Provider value={todoCtx}>
         <GitContext.Provider value={gitCtx}>
-          {renderScreen()}
+          <ArchiveContext.Provider value={archiveStore}>
+            {renderScreen()}
+          </ArchiveContext.Provider>
         </GitContext.Provider>
       </TodoContext.Provider>
     </NavigationContext.Provider>

@@ -17,7 +17,7 @@ afterEach(async () => {
 
 describe("TodoStore", () => {
   it("creates default data file on first load", async () => {
-    const store = new TodoStore(tempDir);
+    const store = new TodoStore(join(tempDir, "todos.json"));
     const data = await store.load();
     expect(data.version).toBe(1);
     expect(data.todos).toEqual([]);
@@ -25,7 +25,7 @@ describe("TodoStore", () => {
   });
 
   it("round-trips save and load", async () => {
-    const store = new TodoStore(tempDir);
+    const store = new TodoStore(join(tempDir, "todos.json"));
     const todo = {
       id: "550e8400-e29b-41d4-a716-446655440000",
       title: "Persisted",
@@ -44,7 +44,7 @@ describe("TodoStore", () => {
   });
 
   it("returns empty array for getTodos on fresh store", async () => {
-    const store = new TodoStore(tempDir);
+    const store = new TodoStore(join(tempDir, "todos.json"));
     const todos = await store.getTodos();
     expect(todos).toEqual([]);
   });

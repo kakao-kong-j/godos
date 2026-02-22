@@ -9,6 +9,7 @@ import {
   isInitialized,
   saveConfig,
   resolveDataPath,
+  godosRoot,
   DEFAULT_DATA_PATH,
   type GodosConfig,
 } from "../store/config.js";
@@ -16,24 +17,20 @@ import { GitService } from "../git/GitService.js";
 
 type Step = "input" | "confirm_overwrite" | "running" | "done" | "error";
 
-interface Props {
-  rootDir: string;
-}
-
-export function InitWizard({ rootDir }: Props) {
+export function InitWizard() {
   const { exit } = useApp();
 
   const [step, setStep] = useState<Step>("input");
   const [dataPath, setDataPath] = useState(DEFAULT_DATA_PATH);
   const [gitAvailable, setGitAvailable] = useState<boolean | null>(null);
-  const [alreadyInit] = useState(() => isInitialized(rootDir));
+  const [alreadyInit] = useState(() => isInitialized());
   const [errorMsg, setErrorMsg] = useState("");
   const isRunningRef = useRef(false);
 
   useEffect(() => {
-    const git = new GitService(rootDir, "", 0);
+    const git = new GitService(process.cwd(), "", [], 0);
     git.isGitRepo().then(setGitAvailable).catch(() => setGitAvailable(false));
-  }, [rootDir]);
+  }, []);
 
   useInput((input, key) => {
     if (step === "confirm_overwrite" && !isRunningRef.current) {
@@ -55,8 +52,8 @@ export function InitWizard({ rootDir }: Props) {
     setStep("running");
     try {
       const config: GodosConfig = { version: 1, dataPath: resolvedDataPath };
-      await saveConfig(config, rootDir);
-      const absDataPath = resolveDataPath(config, rootDir);
+      await saveConfig(config);
+      const absDataPath = resolveDataPath(config);
       await mkdir(dirname(absDataPath), { recursive: true });
       setStep("done");
     } catch (err) {
@@ -93,8 +90,7 @@ export function InitWizard({ rootDir }: Props) {
         <Box flexDirection="column">
           <Box marginBottom={1}>
             <Text color="gray">
-              Enter data path (relative to project root). Press Enter for
-              default.
+              Enter data path (relative to ~/.godos). Press Enter for default.
             </Text>
           </Box>
           <Box>
@@ -118,7 +114,7 @@ export function InitWizard({ rootDir }: Props) {
       {step === "confirm_overwrite" && (
         <Box flexDirection="column" marginTop={1}>
           <Text color="yellow" bold>
-            godos is already initialized in this directory.
+            godos is already initialized.
           </Text>
           <Text color="gray">
             Existing config will be overwritten. Continue? (y/n)
@@ -138,7 +134,7 @@ export function InitWizard({ rootDir }: Props) {
             Initialized godos workspace.
           </Text>
           <Text color="gray">Data path: {dataPath}</Text>
-          <Text color="gray">Config written to .godos/config.json</Text>
+          <Text color="gray">Config written to {godosRoot()}/config.json</Text>
           <Text color="gray" dimColor>
             Press Enter to exit.
           </Text>

@@ -1,6 +1,6 @@
 import { useState, useCallback, createContext, useContext } from "react";
 
-export type Screen = "main" | "add" | "edit" | "filter" | "help";
+export type Screen = "main" | "add" | "edit" | "filter" | "help" | "stats";
 
 export interface NavigationState {
   screen: Screen;

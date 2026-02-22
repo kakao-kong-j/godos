@@ -3,6 +3,7 @@ import { Box, Text, useInput, useApp } from "ink";
 import { useTodoContext } from "../hooks/useTodos.js";
 import { useNavigation } from "../hooks/useNavigation.js";
 import { useGitContext } from "../hooks/useGit.js";
+import { useArchiveStore } from "../store/ArchiveStore.js";
 import { Header } from "../components/Header.js";
 import { TodoList } from "../components/TodoList.js";
 import { StatusBar } from "../components/StatusBar.js";
@@ -12,10 +13,12 @@ const STATUS_FILTER_CYCLE = ["all", "pending", "in_progress", "done"] as const;
 export function MainListScreen() {
   const { exit } = useApp();
   const nav = useNavigation();
-  const { state, filteredTodos, toggleStatus, cyclePriority, deleteTodo, setFilter, resetFilter, setSelectedIndex } =
+  const { state, filteredTodos, toggleStatus, cyclePriority, deleteTodo, archiveDone, setFilter, resetFilter, setSelectedIndex } =
     useTodoContext();
   const git = useGitContext();
+  const archiveStore = useArchiveStore();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmArchive, setConfirmArchive] = useState(false);
 
   const selected = filteredTodos[state.selectedIndex];
 
@@ -28,6 +31,24 @@ export function MainListScreen() {
         setConfirmDelete(false);
       } else {
         setConfirmDelete(false);
+      }
+      return;
+    }
+
+    if (confirmArchive) {
+      if (input === "y") {
+        const archived = archiveDone();
+        if (archived.length > 0) {
+          archiveStore
+            ?.append(archived)
+            .catch(() => {})
+            .finally(() => {
+              git.commit(`archive ${archived.length} done todo(s)`);
+            });
+        }
+        setConfirmArchive(false);
+      } else {
+        setConfirmArchive(false);
       }
       return;
     }
@@ -78,6 +99,17 @@ export function MainListScreen() {
       nav.navigate("help");
     }
 
+    // Archive done
+    if (input === "A") {
+      const hasDone = state.todos.some((t) => t.status === "done");
+      if (hasDone) setConfirmArchive(true);
+    }
+
+    // Stats
+    if (input === "s") {
+      nav.navigate("stats");
+    }
+
     // Tab: cycle status filter
     if (key.tab) {
       const currentIdx = STATUS_FILTER_CYCLE.indexOf(state.filter.status as typeof STATUS_FILTER_CYCLE[number]);
@@ -120,6 +152,13 @@ export function MainListScreen() {
           </Text>
         </Box>
       )}
+      {confirmArchive && (
+        <Box marginTop={1}>
+          <Text color="yellow" bold>
+            Archive all done todos? (y/n)
+          </Text>
+        </Box>
+      )}
       <StatusBar
         hints={[
           { key: "↑↓/jk", label: "navigate" },
@@ -128,6 +167,8 @@ export function MainListScreen() {
           { key: "e", label: "edit" },
           { key: "d", label: "delete" },
           { key: "p", label: "priority" },
+          { key: "A", label: "archive" },
+          { key: "s", label: "stats" },
           { key: "/", label: "filter" },
           { key: "?", label: "help" },
           { key: "q", label: "quit" },
