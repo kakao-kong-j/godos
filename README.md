@@ -7,13 +7,20 @@ Todo를 터미널에서 관리하고, 모든 변경사항을 자동으로 git co
 ## 설치
 
 ```bash
-# 의존성 설치
+# 1. GitHub Packages 레지스트리 설정
+echo "@kakao-kong-j:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
+# 2. 전역 설치
+npm install -g @kakao-kong-j/godos
+```
+
+### 소스에서 빌드
+
+```bash
+git clone https://github.com/kakao-kong-j/kodo.git
+cd kodo
 npm install
-
-# 빌드
 npm run build
-
-# (선택) 전역 설치
 npm link
 ```
 
