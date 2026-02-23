@@ -9,8 +9,8 @@ import { FormField } from "../components/FormField.js";
 import { StatusBar } from "../components/StatusBar.js";
 import type { Priority } from "../store/schema.js";
 
-type Field = "title" | "description" | "priority" | "project" | "jira" | "tags";
-const FIELDS: Field[] = ["title", "description", "priority", "project", "jira", "tags"];
+type Field = "title" | "description" | "priority" | "project" | "jira" | "worktree" | "tags";
+const FIELDS: Field[] = ["title", "description", "priority", "project", "jira", "worktree", "tags"];
 const PRIORITIES: Priority[] = ["low", "medium", "high"];
 
 export function AddTodoScreen() {
@@ -24,6 +24,7 @@ export function AddTodoScreen() {
   const [priorityIdx, setPriorityIdx] = useState(1); // medium
   const [project, setProject] = useState("");
   const [jira, setJira] = useState("");
+  const [worktree, setWorktree] = useState("");
   const [tags, setTags] = useState("");
 
   const activeIdx = FIELDS.indexOf(activeField);
@@ -58,6 +59,7 @@ export function AddTodoScreen() {
         priority: PRIORITIES[priorityIdx],
         project: project.trim() || undefined,
         jira: jira.trim() || undefined,
+        worktree: worktree.trim() || undefined,
         tags: tags
           .split(",")
           .map((t) => t.trim())
@@ -116,9 +118,17 @@ export function AddTodoScreen() {
 
       <FormField label="Jira">
         {activeField === "jira" ? (
-          <TextInput placeholder="Jira issue key (optional)" onChange={setJira} onSubmit={() => setActiveField("tags")} />
+          <TextInput placeholder="Jira issue key (optional)" onChange={setJira} onSubmit={() => setActiveField("worktree")} />
         ) : (
           <Text>{jira || <Text color="gray">empty</Text>}</Text>
+        )}
+      </FormField>
+
+      <FormField label="Worktree">
+        {activeField === "worktree" ? (
+          <TextInput placeholder="Worktree path (optional)" onChange={setWorktree} onSubmit={() => setActiveField("tags")} />
+        ) : (
+          <Text>{worktree || <Text color="gray">empty</Text>}</Text>
         )}
       </FormField>
 

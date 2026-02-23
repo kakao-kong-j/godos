@@ -15,6 +15,7 @@ export const TodoSchema = z.object({
   tags: z.array(z.string()).default([]),
   project: z.string().optional(),
   jira: z.string().optional(),
+  worktree: z.string().optional(),
   dueDate: z.string().datetime().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

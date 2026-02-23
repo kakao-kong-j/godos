@@ -184,6 +184,7 @@ export interface TodoContextType {
     tags?: string[];
     project?: string;
     jira?: string;
+    worktree?: string;
     dueDate?: string;
   }) => Todo;
   updateTodo: (id: string, updates: Partial<Omit<Todo, "id" | "createdAt">>) => void;
@@ -228,6 +229,7 @@ export function useTodos(store: TodoStore | null) {
       tags?: string[];
       project?: string;
       jira?: string;
+      worktree?: string;
       dueDate?: string;
     }): Todo => {
       const now = nowISO();
@@ -240,6 +242,7 @@ export function useTodos(store: TodoStore | null) {
         tags: input.tags ?? [],
         project: input.project,
         jira: input.jira,
+        worktree: input.worktree,
         dueDate: input.dueDate,
         createdAt: now,
         updatedAt: now,

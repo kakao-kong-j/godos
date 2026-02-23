@@ -11,6 +11,7 @@ interface CliFlags {
   project?: string;
   tag?: string[];
   jira?: string;
+  worktree?: string;
 }
 
 export async function runNonInteractive(
@@ -39,6 +40,7 @@ export async function runNonInteractive(
         tags: flags.tag ?? [],
         project: flags.project,
         jira: flags.jira,
+        worktree: flags.worktree,
         createdAt: now,
         updatedAt: now,
       };
@@ -67,9 +69,10 @@ export async function runNonInteractive(
         const pLabel = PRIORITY_LABELS[todo.priority];
         const project = todo.project ? ` [${todo.project}]` : "";
         const jira = todo.jira ? ` ${todo.jira}` : "";
+        const wt = todo.worktree ? ` 📂${todo.worktree}` : "";
         const tags = todo.tags.length > 0 ? ` #${todo.tags.join(" #")}` : "";
         const date = formatDate(todo.createdAt);
-        console.log(`${icon} ${todo.title} (${pLabel})${project}${jira}${tags}  ${date}`);
+        console.log(`${icon} ${todo.title} (${pLabel})${project}${jira}${wt}${tags}  ${date}`);
       }
       return 0;
     }

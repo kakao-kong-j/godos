@@ -37,6 +37,9 @@ export function TodoItem({ todo, isSelected }: Props) {
       {todo.jira && (
         <Text color="magenta"> {todo.jira}</Text>
       )}
+      {todo.worktree && (
+        <Text color="blue"> [{todo.worktree.split("/").pop() || todo.worktree}]</Text>
+      )}
       {todo.tags.length > 0 && (
         <>
           <Text> </Text>

@@ -1,4 +1,6 @@
 import React, { useState, useRef } from "react";
+import { execFile } from "node:child_process";
+import { existsSync } from "node:fs";
 import { Box, Text, useInput, useApp } from "ink";
 import { useTodoContext } from "../hooks/useTodos.js";
 import { useNavigation } from "../hooks/useNavigation.js";
@@ -128,6 +130,18 @@ export function MainListScreen() {
       nav.navigate("stats");
     }
 
+    // Open worktree in terminal (macOS only)
+    if (input === "w" && selected?.worktree) {
+      const dir = selected.worktree;
+      if (process.platform === "darwin" && existsSync(dir)) {
+        execFile("open", ["-a", "Terminal", dir], (err) => {
+          if (err) {
+            setSyncStatus({ type: "error", message: `Failed to open terminal: ${err.message}` });
+          }
+        });
+      }
+    }
+
     // Push
     if (input === "P" && !syncingRef.current) {
       syncingRef.current = true;
@@ -237,6 +251,7 @@ export function MainListScreen() {
           { key: "d", label: "delete" },
           { key: "p", label: "priority" },
           { key: "A", label: "archive" },
+          { key: "w", label: "worktree" },
           { key: "s", label: "stats" },
           { key: "P", label: "push" },
           { key: "L", label: "pull" },

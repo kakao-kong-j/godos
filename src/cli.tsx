@@ -25,6 +25,7 @@ const cli = meow(
     --project, -p   Project name
     --tag, -t       Tag (can be repeated)
     --jira, -j      Jira issue key (e.g. PROJ-123)
+    --worktree, -w  Worktree path
 
   Examples
     $ godos
@@ -41,6 +42,7 @@ const cli = meow(
       project: { type: "string", shortFlag: "p" },
       tag: { type: "string", shortFlag: "t", isMultiple: true },
       jira: { type: "string", shortFlag: "j" },
+      worktree: { type: "string", shortFlag: "w" },
     },
   }
 );
