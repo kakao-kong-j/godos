@@ -24,10 +24,11 @@ const cli = meow(
     --priority, -P  Priority: high, medium, low (default: medium)
     --project, -p   Project name
     --tag, -t       Tag (can be repeated)
+    --jira, -j      Jira issue key (e.g. PROJ-123)
 
   Examples
     $ godos
-    $ godos add "Fix login bug" -P high -p myapp -t bug
+    $ godos add "Fix login bug" -P high -p myapp -t bug -j PROJ-123
     $ godos list
     $ godos remote add origin git@github.com:user/godos-data.git
     $ godos push
@@ -39,6 +40,7 @@ const cli = meow(
       priority: { type: "string", shortFlag: "P", default: "medium" },
       project: { type: "string", shortFlag: "p" },
       tag: { type: "string", shortFlag: "t", isMultiple: true },
+      jira: { type: "string", shortFlag: "j" },
     },
   }
 );

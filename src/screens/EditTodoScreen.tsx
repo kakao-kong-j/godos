@@ -9,8 +9,8 @@ import { FormField } from "../components/FormField.js";
 import { StatusBar } from "../components/StatusBar.js";
 import type { Priority } from "../store/schema.js";
 
-type Field = "title" | "description" | "priority" | "project" | "tags";
-const FIELDS: Field[] = ["title", "description", "priority", "project", "tags"];
+type Field = "title" | "description" | "priority" | "project" | "jira" | "tags";
+const FIELDS: Field[] = ["title", "description", "priority", "project", "jira", "tags"];
 const PRIORITIES: Priority[] = ["low", "medium", "high"];
 
 export function EditTodoScreen() {
@@ -28,6 +28,7 @@ export function EditTodoScreen() {
     todo ? PRIORITIES.indexOf(todo.priority) : 1
   );
   const [project, setProject] = useState(todo?.project ?? "");
+  const [jira, setJira] = useState(todo?.jira ?? "");
   const [tags, setTags] = useState(todo?.tags.join(", ") ?? "");
 
   const activeIdx = FIELDS.indexOf(activeField);
@@ -58,6 +59,7 @@ export function EditTodoScreen() {
         description: description.trim(),
         priority: PRIORITIES[priorityIdx],
         project: project.trim() || undefined,
+        jira: jira.trim() || undefined,
         tags: tags
           .split(",")
           .map((t) => t.trim())
@@ -116,9 +118,17 @@ export function EditTodoScreen() {
 
       <FormField label="Project">
         {activeField === "project" ? (
-          <TextInput defaultValue={project} placeholder="Project name" onChange={setProject} onSubmit={() => setActiveField("tags")} />
+          <TextInput defaultValue={project} placeholder="Project name" onChange={setProject} onSubmit={() => setActiveField("jira")} />
         ) : (
           <Text>{project || <Text color="gray">empty</Text>}</Text>
+        )}
+      </FormField>
+
+      <FormField label="Jira">
+        {activeField === "jira" ? (
+          <TextInput defaultValue={jira} placeholder="Jira issue key" onChange={setJira} onSubmit={() => setActiveField("tags")} />
+        ) : (
+          <Text>{jira || <Text color="gray">empty</Text>}</Text>
         )}
       </FormField>
 

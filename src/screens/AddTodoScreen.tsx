@@ -9,8 +9,8 @@ import { FormField } from "../components/FormField.js";
 import { StatusBar } from "../components/StatusBar.js";
 import type { Priority } from "../store/schema.js";
 
-type Field = "title" | "description" | "priority" | "project" | "tags";
-const FIELDS: Field[] = ["title", "description", "priority", "project", "tags"];
+type Field = "title" | "description" | "priority" | "project" | "jira" | "tags";
+const FIELDS: Field[] = ["title", "description", "priority", "project", "jira", "tags"];
 const PRIORITIES: Priority[] = ["low", "medium", "high"];
 
 export function AddTodoScreen() {
@@ -23,6 +23,7 @@ export function AddTodoScreen() {
   const [description, setDescription] = useState("");
   const [priorityIdx, setPriorityIdx] = useState(1); // medium
   const [project, setProject] = useState("");
+  const [jira, setJira] = useState("");
   const [tags, setTags] = useState("");
 
   const activeIdx = FIELDS.indexOf(activeField);
@@ -56,6 +57,7 @@ export function AddTodoScreen() {
         description: description.trim(),
         priority: PRIORITIES[priorityIdx],
         project: project.trim() || undefined,
+        jira: jira.trim() || undefined,
         tags: tags
           .split(",")
           .map((t) => t.trim())
@@ -106,9 +108,17 @@ export function AddTodoScreen() {
 
       <FormField label="Project">
         {activeField === "project" ? (
-          <TextInput placeholder="Project name (optional)" onChange={setProject} onSubmit={() => setActiveField("tags")} />
+          <TextInput placeholder="Project name (optional)" onChange={setProject} onSubmit={() => setActiveField("jira")} />
         ) : (
           <Text>{project || <Text color="gray">empty</Text>}</Text>
+        )}
+      </FormField>
+
+      <FormField label="Jira">
+        {activeField === "jira" ? (
+          <TextInput placeholder="Jira issue key (optional)" onChange={setJira} onSubmit={() => setActiveField("tags")} />
+        ) : (
+          <Text>{jira || <Text color="gray">empty</Text>}</Text>
         )}
       </FormField>
 

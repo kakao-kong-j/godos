@@ -34,6 +34,9 @@ export function TodoItem({ todo, isSelected }: Props) {
       {todo.project && (
         <Text color="yellow"> [{todo.project}]</Text>
       )}
+      {todo.jira && (
+        <Text color="magenta"> {todo.jira}</Text>
+      )}
       {todo.tags.length > 0 && (
         <>
           <Text> </Text>

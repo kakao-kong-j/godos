@@ -14,6 +14,7 @@ export const TodoSchema = z.object({
   priority: PrioritySchema.default("medium"),
   tags: z.array(z.string()).default([]),
   project: z.string().optional(),
+  jira: z.string().optional(),
   dueDate: z.string().datetime().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

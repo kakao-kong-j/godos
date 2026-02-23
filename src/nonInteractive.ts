@@ -10,6 +10,7 @@ interface CliFlags {
   priority?: string;
   project?: string;
   tag?: string[];
+  jira?: string;
 }
 
 export async function runNonInteractive(
@@ -37,6 +38,7 @@ export async function runNonInteractive(
         priority,
         tags: flags.tag ?? [],
         project: flags.project,
+        jira: flags.jira,
         createdAt: now,
         updatedAt: now,
       };
@@ -64,9 +66,10 @@ export async function runNonInteractive(
         const icon = STATUS_ICONS[todo.status];
         const pLabel = PRIORITY_LABELS[todo.priority];
         const project = todo.project ? ` [${todo.project}]` : "";
+        const jira = todo.jira ? ` ${todo.jira}` : "";
         const tags = todo.tags.length > 0 ? ` #${todo.tags.join(" #")}` : "";
         const date = formatDate(todo.createdAt);
-        console.log(`${icon} ${todo.title} (${pLabel})${project}${tags}  ${date}`);
+        console.log(`${icon} ${todo.title} (${pLabel})${project}${jira}${tags}  ${date}`);
       }
       return 0;
     }

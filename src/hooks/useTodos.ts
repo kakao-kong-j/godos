@@ -183,6 +183,7 @@ export interface TodoContextType {
     priority?: Priority;
     tags?: string[];
     project?: string;
+    jira?: string;
     dueDate?: string;
   }) => Todo;
   updateTodo: (id: string, updates: Partial<Omit<Todo, "id" | "createdAt">>) => void;
@@ -226,6 +227,7 @@ export function useTodos(store: TodoStore | null) {
       priority?: Priority;
       tags?: string[];
       project?: string;
+      jira?: string;
       dueDate?: string;
     }): Todo => {
       const now = nowISO();
@@ -237,6 +239,7 @@ export function useTodos(store: TodoStore | null) {
         priority: input.priority ?? "medium",
         tags: input.tags ?? [],
         project: input.project,
+        jira: input.jira,
         dueDate: input.dueDate,
         createdAt: now,
         updatedAt: now,
