@@ -24,10 +24,6 @@ export class TodoStore {
     return this.filePath;
   }
 
-  static archiveFilePathFor(todosFilePath: string): string {
-    return join(dirname(todosFilePath), "archive.json");
-  }
-
   async load(): Promise<GodosData> {
     if (!existsSync(this.filePath)) {
       await this.save(DEFAULT_GODOS_DATA);
@@ -56,5 +52,40 @@ export class TodoStore {
     const data = await this.load();
     data.todos = todos;
     await this.save(data);
+  }
+
+  get completedFilePath(): string {
+    return join(dirname(this.filePath), "completed.json");
+  }
+
+  async saveCompleted(todos: Todo[]): Promise<void> {
+    if (todos.length === 0) return;
+    const filePath = this.completedFilePath;
+    let existing: Todo[] = [];
+    if (existsSync(filePath)) {
+      const raw = await readFile(filePath, "utf-8");
+      existing = JSON.parse(raw);
+    }
+    const merged = [...existing, ...todos];
+    const dir = dirname(filePath);
+    if (!existsSync(dir)) {
+      await mkdir(dir, { recursive: true });
+    }
+    await writeFile(filePath, JSON.stringify(merged, null, 2) + "\n", "utf-8");
+  }
+
+  async getCompleted(): Promise<Todo[]> {
+    const filePath = this.completedFilePath;
+    if (!existsSync(filePath)) return [];
+    const raw = await readFile(filePath, "utf-8");
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+    // Migrate from old archive format { version, batches: [{ todos }] }
+    if (parsed?.batches && Array.isArray(parsed.batches)) {
+      const todos = parsed.batches.flatMap((b: { todos?: Todo[] }) => b.todos ?? []);
+      await writeFile(filePath, JSON.stringify(todos, null, 2) + "\n", "utf-8");
+      return todos;
+    }
+    return [];
   }
 }

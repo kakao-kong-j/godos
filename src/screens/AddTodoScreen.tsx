@@ -50,6 +50,12 @@ export function AddTodoScreen() {
       });
     }
 
+    // Enter on priority field to advance to next field
+    if (activeField === "priority" && key.return) {
+      setActiveField("project");
+      return;
+    }
+
     // Ctrl+S or Enter on last field to submit
     if ((input === "s" && key.ctrl) || (key.return && activeField === "tags")) {
       if (!title.trim()) return;

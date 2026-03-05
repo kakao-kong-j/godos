@@ -2,23 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Box, Text, useInput } from "ink";
 import { useNavigation } from "../hooks/useNavigation.js";
 import { useTodoContext } from "../hooks/useTodos.js";
-import { useArchiveStore } from "../store/ArchiveStore.js";
 import { Header } from "../components/Header.js";
 import { StatusBar } from "../components/StatusBar.js";
 import type { TodoStatus } from "../store/schema.js";
 
 export function StatsScreen() {
   const nav = useNavigation();
-  const { state } = useTodoContext();
-  const archiveStore = useArchiveStore();
-  const [archivedCount, setArchivedCount] = useState<number | null>(null);
+  const { state, getCompletedCount } = useTodoContext();
+  const [completedCount, setCompletedCount] = useState<number | null>(null);
 
   useEffect(() => {
-    archiveStore
-      ?.count()
-      .then(setArchivedCount)
-      .catch(() => setArchivedCount(0));
-  }, [archiveStore]);
+    getCompletedCount()
+      .then(setCompletedCount)
+      .catch(() => setCompletedCount(0));
+  }, [getCompletedCount]);
 
   useInput((_input, key) => {
     if (key.escape || _input === "q" || _input === "s") {
@@ -35,21 +32,21 @@ export function StatsScreen() {
   for (const t of todos) counts[t.status]++;
 
   const total = todos.length;
-  const totalWithArchived = total + (archivedCount ?? 0);
-  const totalDone = counts.done + (archivedCount ?? 0);
+  const totalCompleted = counts.done + (completedCount ?? 0);
+  const totalAll = total + (completedCount ?? 0);
   const completionRate =
-    archivedCount === null
+    completedCount === null
       ? null
-      : totalWithArchived > 0
-        ? Math.round((totalDone / totalWithArchived) * 100)
+      : totalAll > 0
+        ? Math.round((totalCompleted / totalAll) * 100)
         : 0;
 
   return (
     <Box flexDirection="column">
-      <Header title="Stats" subtitle="Todo completion overview" />
+      <Header title="Stats" subtitle="Todo overview" />
 
       <Box flexDirection="column" marginBottom={1}>
-        <StatRow label="Total (active)" value={String(total)} />
+        <StatRow label="Active" value={String(total)} />
         <StatRow label="  Pending" value={String(counts.pending)} color="yellow" />
         <StatRow label="  In Progress" value={String(counts.in_progress)} color="blue" />
         <StatRow label="  Done" value={String(counts.done)} color="green" />
@@ -57,13 +54,13 @@ export function StatsScreen() {
 
       <Box flexDirection="column" marginBottom={1}>
         <StatRow
-          label="Archived"
-          value={archivedCount === null ? "…" : String(archivedCount)}
+          label="Cleared"
+          value={completedCount === null ? "..." : String(completedCount)}
           color="gray"
         />
         <StatRow
           label="Completion rate"
-          value={completionRate === null ? "…" : `${completionRate}%`}
+          value={completionRate === null ? "..." : `${completionRate}%`}
           color="cyan"
         />
       </Box>

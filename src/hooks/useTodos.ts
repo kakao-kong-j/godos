@@ -194,7 +194,8 @@ export interface TodoContextType {
   setFilter: (filter: Partial<TodoFilter>) => void;
   resetFilter: () => void;
   setSelectedIndex: (index: number) => void;
-  archiveDone: () => Todo[];
+  clearCompleted: () => Todo[];
+  getCompletedCount: () => Promise<number>;
   reload: () => Promise<void>;
 }
 
@@ -284,11 +285,18 @@ export function useTodos(store: TodoStore | null) {
     dispatch({ type: "SET_SELECTED", index });
   }, []);
 
-  const archiveDone = useCallback((): Todo[] => {
+  const clearCompleted = useCallback((): Todo[] => {
     const doneTodos = state.todos.filter((t) => t.status === "done");
     dispatch({ type: "ARCHIVE_DONE" });
+    store?.saveCompleted(doneTodos).catch(() => {});
     return doneTodos;
-  }, [state.todos]);
+  }, [state.todos, store]);
+
+  const getCompletedCount = useCallback(async (): Promise<number> => {
+    if (!store) return 0;
+    const completed = await store.getCompleted();
+    return completed.length;
+  }, [store]);
 
   const reloadingRef = useRef(false);
 
@@ -321,7 +329,8 @@ export function useTodos(store: TodoStore | null) {
     setFilter,
     resetFilter,
     setSelectedIndex,
-    archiveDone,
+    clearCompleted,
+    getCompletedCount,
     reload,
   };
 }

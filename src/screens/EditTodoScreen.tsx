@@ -53,6 +53,12 @@ export function EditTodoScreen() {
       });
     }
 
+    // Enter on priority field to advance to next field
+    if (activeField === "priority" && key.return) {
+      setActiveField("project");
+      return;
+    }
+
     if ((input === "s" && key.ctrl) || (key.return && activeField === "tags")) {
       if (!title.trim() || !todoId) return;
       updateTodo(todoId, {

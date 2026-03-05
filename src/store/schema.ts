@@ -33,22 +33,3 @@ export const DEFAULT_GODOS_DATA: GodosData = {
   version: 1,
   todos: [],
 };
-
-// --- Archive ---
-
-export const ArchiveBatchSchema = z.object({
-  archivedAt: z.string().datetime(),
-  todos: z.array(TodoSchema),
-});
-export type ArchiveBatch = z.infer<typeof ArchiveBatchSchema>;
-
-export const ArchiveDataSchema = z.object({
-  version: z.literal(1),
-  batches: z.array(ArchiveBatchSchema),
-});
-export type ArchiveData = z.infer<typeof ArchiveDataSchema>;
-
-export const DEFAULT_ARCHIVE_DATA: ArchiveData = {
-  version: 1,
-  batches: [],
-};

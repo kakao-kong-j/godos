@@ -6,6 +6,7 @@ import { App } from "./app.js";
 import { InitWizard } from "./init/InitWizard.js";
 import { isInitialized } from "./store/config.js";
 import { runNonInteractive } from "./nonInteractive.js";
+import { runDoctor } from "./doctor.js";
 
 const cli = meow(
   `
@@ -19,6 +20,7 @@ const cli = meow(
     $ godos remote remove <name>     Remove a git remote
     $ godos push [remote]            Push to remote (default: origin)
     $ godos pull [remote]            Pull from remote (default: origin)
+    $ godos doctor                   Check and fix data file issues
 
   Options
     --priority, -P  Priority: high, medium, low (default: medium)
@@ -49,7 +51,9 @@ const cli = meow(
 
 const [command, ...args] = cli.input;
 
-if (command === "init") {
+if (command === "doctor") {
+  runDoctor().then((code) => process.exit(code));
+} else if (command === "init") {
   const { waitUntilExit } = render(<InitWizard />);
   waitUntilExit().catch(() => process.exit(1));
 } else if (!isInitialized()) {

@@ -5,7 +5,6 @@ import { Box, Text, useInput, useApp } from "ink";
 import { useTodoContext } from "../hooks/useTodos.js";
 import { useNavigation } from "../hooks/useNavigation.js";
 import { useGitContext } from "../hooks/useGit.js";
-import { useArchiveStore } from "../store/ArchiveStore.js";
 import { Header } from "../components/Header.js";
 import { TodoList } from "../components/TodoList.js";
 import { StatusBar } from "../components/StatusBar.js";
@@ -20,12 +19,11 @@ interface SyncStatus {
 export function MainListScreen() {
   const { exit } = useApp();
   const nav = useNavigation();
-  const { state, filteredTodos, toggleStatus, cyclePriority, deleteTodo, archiveDone, setFilter, resetFilter, setSelectedIndex, reload } =
+  const { state, filteredTodos, toggleStatus, cyclePriority, deleteTodo, clearCompleted, setFilter, resetFilter, setSelectedIndex, reload } =
     useTodoContext();
   const git = useGitContext();
-  const archiveStore = useArchiveStore();
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [confirmArchive, setConfirmArchive] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const syncingRef = useRef(false);
 
@@ -55,20 +53,15 @@ export function MainListScreen() {
       return;
     }
 
-    if (confirmArchive) {
+    if (confirmClear) {
       if (input === "y") {
-        const archived = archiveDone();
-        if (archived.length > 0) {
-          archiveStore
-            ?.append(archived)
-            .catch(() => {})
-            .finally(() => {
-              git.commit(`archive ${archived.length} done todo(s)`);
-            });
+        const cleared = clearCompleted();
+        if (cleared.length > 0) {
+          git.commit(`clear ${cleared.length} completed todo(s)`);
         }
-        setConfirmArchive(false);
+        setConfirmClear(false);
       } else {
-        setConfirmArchive(false);
+        setConfirmClear(false);
       }
       return;
     }
@@ -119,10 +112,14 @@ export function MainListScreen() {
       nav.navigate("help");
     }
 
-    // Archive done
+    // Clear completed
     if (input === "A") {
       const hasDone = state.todos.some((t) => t.status === "done");
-      if (hasDone) setConfirmArchive(true);
+      if (hasDone) {
+        setConfirmClear(true);
+      } else {
+        setSyncStatus({ type: "error", message: "No completed todos to clear. Toggle with Enter/Space first." });
+      }
     }
 
     // Stats
@@ -216,10 +213,10 @@ export function MainListScreen() {
           </Text>
         </Box>
       )}
-      {confirmArchive && (
+      {confirmClear && (
         <Box marginTop={1}>
           <Text color="yellow" bold>
-            Archive all done todos? (y/n)
+            Remove all completed todos? (y/n)
           </Text>
         </Box>
       )}
@@ -250,7 +247,7 @@ export function MainListScreen() {
           { key: "e", label: "edit" },
           { key: "d", label: "delete" },
           { key: "p", label: "priority" },
-          { key: "A", label: "archive" },
+          { key: "A", label: "clear done" },
           { key: "w", label: "worktree" },
           { key: "s", label: "stats" },
           { key: "P", label: "push" },

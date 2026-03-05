@@ -10,7 +10,7 @@ const SHORTCUTS = [
   { key: "e", desc: "Edit selected todo" },
   { key: "d", desc: "Delete selected todo (with confirmation)" },
   { key: "p", desc: "Cycle priority (low → medium → high)" },
-  { key: "A (shift+a)", desc: "Archive all done todos (with confirmation)" },
+  { key: "A (shift+a)", desc: "Clear all completed todos (with confirmation)" },
   { key: "P (shift+p)", desc: "Push to remote (origin)" },
   { key: "L (shift+l)", desc: "Pull from remote (origin)" },
   { key: "w", desc: "Open worktree in Terminal (macOS)" },

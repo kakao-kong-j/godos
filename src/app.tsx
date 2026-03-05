@@ -3,7 +3,6 @@ import { Box, Text } from "ink";
 import { TodoStore } from "./store/TodoStore.js";
 import { GitService } from "./git/GitService.js";
 import { godosRoot } from "./store/config.js";
-import { ArchiveStore, ArchiveContext } from "./store/ArchiveStore.js";
 import { NavigationContext, useNavigationState } from "./hooks/useNavigation.js";
 import { TodoContext, useTodos } from "./hooks/useTodos.js";
 import { GitContext, useGitService } from "./hooks/useGit.js";
@@ -16,7 +15,6 @@ import { StatsScreen } from "./screens/StatsScreen.js";
 
 export function App() {
   const [store, setStore] = useState<TodoStore | null>(null);
-  const [archiveStore, setArchiveStore] = useState<ArchiveStore | null>(null);
   const [gitService, setGitService] = useState<GitService | null>(null);
   const [initError, setInitError] = useState<string | null>(null);
 
@@ -24,9 +22,7 @@ export function App() {
     TodoStore.create()
       .then((s) => {
         setStore(s);
-        const archivePath = TodoStore.archiveFilePathFor(s.dataFilePath);
-        setArchiveStore(new ArchiveStore(archivePath));
-        const gs = new GitService(godosRoot(), s.dataFilePath, [archivePath]);
+        const gs = new GitService(godosRoot(), s.dataFilePath, [s.completedFilePath]);
         gs.isGitRepo().then((isRepo) => {
           if (isRepo) setGitService(gs);
         });
@@ -77,9 +73,7 @@ export function App() {
     <NavigationContext.Provider value={nav}>
       <TodoContext.Provider value={todoCtx}>
         <GitContext.Provider value={gitCtx}>
-          <ArchiveContext.Provider value={archiveStore}>
-            {renderScreen()}
-          </ArchiveContext.Provider>
+          {renderScreen()}
         </GitContext.Provider>
       </TodoContext.Provider>
     </NavigationContext.Provider>
