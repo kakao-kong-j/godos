@@ -7,6 +7,7 @@ import { InitWizard } from "./init/InitWizard.js";
 import { isInitialized } from "./store/config.js";
 import { runNonInteractive } from "./nonInteractive.js";
 import { runDoctor } from "./doctor.js";
+import { startWebServer } from "./web/server.js";
 
 const cli = meow(
   `
@@ -21,8 +22,10 @@ const cli = meow(
     $ godos push [remote]            Push to remote (default: origin)
     $ godos pull [remote]            Pull from remote (default: origin)
     $ godos doctor                   Check and fix data file issues
+    $ godos web                      Start web UI server
 
   Options
+    --port          Port for web server (default: 3000)
     --priority, -P  Priority: high, medium, low (default: medium)
     --project, -p   Project name
     --tag, -t       Tag (can be repeated)
@@ -45,6 +48,7 @@ const cli = meow(
       tag: { type: "string", shortFlag: "t", isMultiple: true },
       jira: { type: "string", shortFlag: "j" },
       worktree: { type: "string", shortFlag: "w" },
+      port: { type: "number", default: 3000 },
     },
   }
 );
@@ -53,6 +57,12 @@ const [command, ...args] = cli.input;
 
 if (command === "doctor") {
   runDoctor().then((code) => process.exit(code));
+} else if (command === "web") {
+  if (!isInitialized()) {
+    console.error("godos is not initialized. Run 'godos init' first.");
+    process.exit(1);
+  }
+  startWebServer(cli.flags.port);
 } else if (command === "init") {
   const { waitUntilExit } = render(<InitWizard />);
   waitUntilExit().catch(() => process.exit(1));
